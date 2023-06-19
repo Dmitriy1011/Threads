@@ -7,6 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.EMPTY_REQUEST
 import ru.netology.nmedia.dto.Post
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -36,8 +37,32 @@ class PostRepositoryImpl : PostRepository {
             .let { gson.fromJson(it, typeToken) }
     }
 
-    override fun likeById(id: Long) {
-       //
+    override fun likeById(id: Long): Post {
+        if (id) {
+            val request: Request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url("${BASE_URL}/api/posts/${id}/likes")
+                .build()
+
+            return client.newCall(request)
+                .execute()
+                .let { it.body?.string() ?: throw RuntimeException("body is null") }
+                .let {
+                    gson.fromJson(it, Post::class.java)
+                }
+        } else {
+            val request: Request = Request.Builder()
+                .delete(EMPTY_REQUEST)
+                .url("${BASE_URL}/api/posts/${id}/likes")
+                .build()
+
+            return client.newCall(request)
+                .execute()
+                .let { it.body?.string() ?: throw RuntimeException("body is null") }
+                .let {
+                    gson.fromJson(it, Post::class.java)
+                }
+        }
     }
 
     override fun save(post: Post) {
