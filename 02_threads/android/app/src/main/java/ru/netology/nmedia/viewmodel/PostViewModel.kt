@@ -74,14 +74,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun likeById(id: Long) { //вызывается из FeedFragment adapter
+    fun likeById(post: Post) { //вызывается из FeedFragment adapter
         thread {
-            val post = repository.likeById(id)
+            val post = repository.likeById(post)
             _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty().map { it.likedByMe = post.likedByMe})
+                _data.value?.copy(posts = _data.value?.posts.orEmpty().map { if(it.id == post.id) post else it})
             )
             try {
-                repository.likeById(id)
+                repository.likeById(post)
             } catch (e: IOException) {
                 _data.postValue(_data.value?.copy(posts = _data.value?.posts.orEmpty()))
             }

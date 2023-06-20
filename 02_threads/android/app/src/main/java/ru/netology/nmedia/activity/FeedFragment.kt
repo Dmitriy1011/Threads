@@ -33,7 +33,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post.id)
+                viewModel.likeById(post)
             }
 
             override fun onRemove(post: Post) {
@@ -66,6 +66,10 @@ class FeedFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+        }
+
+        binding.swipeRefresh.setOnClickListener {
+            viewModel.loadPosts()
         }
 
         return binding.root

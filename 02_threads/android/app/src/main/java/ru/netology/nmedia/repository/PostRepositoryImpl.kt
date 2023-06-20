@@ -37,11 +37,11 @@ class PostRepositoryImpl : PostRepository {
             .let { gson.fromJson(it, typeToken) }
     }
 
-    override fun likeById(id: Long): Post {
-        if (id) {
+    override fun likeById(post: Post): Post {
+        if (post.likedByMe) {
             val request: Request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url("${BASE_URL}/api/posts/${id}/likes")
+                .url("${BASE_URL}/api/posts/${post.id}/likes")
                 .build()
 
             return client.newCall(request)
@@ -53,7 +53,7 @@ class PostRepositoryImpl : PostRepository {
         } else {
             val request: Request = Request.Builder()
                 .delete(EMPTY_REQUEST)
-                .url("${BASE_URL}/api/posts/${id}/likes")
+                .url("${BASE_URL}/api/posts/${post.id}/likes")
                 .build()
 
             return client.newCall(request)
@@ -66,7 +66,7 @@ class PostRepositoryImpl : PostRepository {
     }
 
     override fun save(post: Post) {
-        val request : Request = Request.Builder()
+        val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
             .url("${BASE_URL}/api/slow/posts")
             .build()
@@ -75,7 +75,8 @@ class PostRepositoryImpl : PostRepository {
     }
 
     override fun removeById(id: Long) {
-        val request : Request = Request.Builder().delete().url("${BASE_URL}/api/slow/posts/$id").build()
+        val request: Request =
+            Request.Builder().delete().url("${BASE_URL}/api/slow/posts/$id").build()
 
         client.newCall(request).execute().close()
     }
